@@ -1,6 +1,5 @@
 import 'package:finance_app/enterprise.dart';
 import 'package:flutter/material.dart';
-import 'dart:math';
 
 class EnterpriseExchangeCard extends StatelessWidget {
   final Enterprise enterprise;

@@ -20,10 +20,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   List<Enterprise> enterpriseList = [];
   TextEditingController newEnterpriseCodeController = TextEditingController();
-  Future<void> addEnterpriseInlist() async {
-    print(enterpriseList);
 
-    String code = newEnterpriseCodeController.text.toUpperCase();
+  Future<void> addEnterpriseInlist(String code) async {
     var map = await getEnterpriseInfoInMap(code);
     Enterprise newEnterprise = convertJsonToEnterpris(map['results'][code]);
     enterpriseList.add(newEnterprise);
@@ -57,7 +55,8 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: Color(0XFF2E3240),
         onPressed: () async {
           if (!hasEnterpriseInlist()) {
-            await addEnterpriseInlist();
+            await addEnterpriseInlist(
+                newEnterpriseCodeController.text.toUpperCase());
           }
           setState(() {
             enterpriseList = enterpriseList;
