@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 
 String chave = "b447fa12";
 String requestUrl =
@@ -21,10 +22,41 @@ class _HomePageState extends State<HomePage> {
   List<Enterprise> enterpriseList = [];
   TextEditingController newEnterpriseCodeController = TextEditingController();
 
+  Future<void> _getEnterpriseSavedCodeList() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> codeList = prefs.getStringList("enterpriseCodeList")!.toList();
+    codeList.forEach((element) {
+      addEnterpriseInlist(element);
+    });
+  }
+
+  void deleteEnterprise(index) {
+    setState(() {
+      enterpriseList.removeAt(index);
+    });
+    _saveInStorage();
+  }
+
+  _saveInStorage() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    List<String> codeList = enterpriseList.map((e) => e.code).toList();
+    await prefs.setStringList("enterpriseCodeList", codeList);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _getEnterpriseSavedCodeList();
+  }
+
   Future<void> addEnterpriseInlist(String code) async {
     var map = await getEnterpriseInfoInMap(code);
-    Enterprise newEnterprise = convertJsonToEnterpris(map['results'][code]);
-    enterpriseList.add(newEnterprise);
+    Enterprise newEnterprise = convertJsonToEnterprise(map['results'][code]);
+    setState(() {
+      enterpriseList.add(newEnterprise);
+    });
+
+    _saveInStorage();
   }
 
   bool hasEnterpriseInlist() {
@@ -39,7 +71,7 @@ class _HomePageState extends State<HomePage> {
     return json.decode(response.body);
   }
 
-  Enterprise convertJsonToEnterpris(enterpriseJson) {
+  Enterprise convertJsonToEnterprise(enterpriseJson) {
     return Enterprise(
         code: enterpriseJson['symbol'],
         shortName: enterpriseJson['name'],
@@ -57,10 +89,8 @@ class _HomePageState extends State<HomePage> {
           if (!hasEnterpriseInlist()) {
             await addEnterpriseInlist(
                 newEnterpriseCodeController.text.toUpperCase());
+            newEnterpriseCodeController.clear();
           }
-          setState(() {
-            enterpriseList = enterpriseList;
-          });
         },
         child: Icon(Icons.add),
       ),
@@ -83,6 +113,9 @@ class _HomePageState extends State<HomePage> {
                     itemCount: enterpriseList.length,
                     itemBuilder: (context, index) {
                       return EnterpriseExchangeCard(
+                        deleteFunction: () {
+                          deleteEnterprise(index);
+                        },
                         colorIndex: index % enterpriseList.length,
                         enterprise: enterpriseList[index],
                       );
