@@ -116,7 +116,7 @@ class _HomePageState extends State<HomePage> {
                         deleteFunction: () {
                           deleteEnterprise(index);
                         },
-                        colorIndex: index % enterpriseList.length,
+                        colorIndex: (index % 6),
                         enterprise: enterpriseList[index],
                       );
                     })
