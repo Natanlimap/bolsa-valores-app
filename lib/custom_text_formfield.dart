@@ -19,6 +19,9 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
         cursorColor: Colors.white,
         enabled: true,
         decoration: InputDecoration(
+            hintStyle: TextStyle(color: Colors.white70),
+            helperStyle: TextStyle(fontSize: 16, color: Colors.white),
+            helperText: "Insira o código da ação e clique no botão +",
             enabled: true,
             enabledBorder: UnderlineInputBorder(
                 borderSide: BorderSide(color: Colors.white)),

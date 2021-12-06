@@ -21,10 +21,10 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   List<Enterprise> enterpriseList = [];
   TextEditingController newEnterpriseCodeController = TextEditingController();
-
+  List<String> codeList = [""];
   Future<void> _getEnterpriseSavedCodeList() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    List<String> codeList = prefs.getStringList("enterpriseCodeList")!.toList();
+    codeList = prefs.getStringList("enterpriseCodeList")!.toList();
     codeList.forEach((element) {
       addEnterpriseInlist(element);
     });
@@ -55,7 +55,7 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       enterpriseList.add(newEnterprise);
     });
-
+    enterpriseList.sort((a, b) => a.shortName.compareTo(b.shortName));
     _saveInStorage();
   }
 
@@ -83,23 +83,23 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Color(0XFF2E3240),
-        onPressed: () async {
-          if (!hasEnterpriseInlist()) {
-            await addEnterpriseInlist(
-                newEnterpriseCodeController.text.toUpperCase());
-            newEnterpriseCodeController.clear();
-          }
-        },
-        child: Icon(Icons.add),
-      ),
-      appBar: AppBar(
-        backgroundColor: Color(0XFF2E3240),
-        title: Text("Ações"),
-      ),
-      backgroundColor: Color(0xFF0F121E),
-      body: SingleChildScrollView(
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: Color(0XFF2E3240),
+          onPressed: () async {
+            if (!hasEnterpriseInlist()) {
+              await addEnterpriseInlist(
+                  newEnterpriseCodeController.text.toUpperCase());
+              newEnterpriseCodeController.clear();
+            }
+          },
+          child: Icon(Icons.add),
+        ),
+        appBar: AppBar(
+          backgroundColor: Color(0XFF2E3240),
+          title: Text("Ações"),
+        ),
+        backgroundColor: Color(0xFF0F121E),
+        body: SingleChildScrollView(
           physics: ScrollPhysics(),
           child: SafeArea(
             child: Column(
@@ -122,7 +122,7 @@ class _HomePageState extends State<HomePage> {
                     })
               ],
             ),
-          )),
-    );
+          ),
+        ));
   }
 }
